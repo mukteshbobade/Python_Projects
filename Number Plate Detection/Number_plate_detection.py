@@ -5,11 +5,11 @@ import imutils #to resize image
 import pytesseract
 import sqlite3
 
-con=sqlite3.connect('NumberPlates.db')
+con=sqlite3.connect('NumberPlates.db')  #connection to database
 cur=con.cursor()
 
 
-pytesseract.pytesseract.tesseract_cmd=r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd=r"C:\Program Files\Tesseract-OCR\tesseract.exe" #pytesseract path
 
 img=cv2.imread('C://python//car2.jpg')      #takes Image
 img=imutils.resize(img,width=300)           #convert Image Size
@@ -44,26 +44,26 @@ for c in ctn:
              
     if len(approx)==4:
         numberplate_count=approx
-        x,y,w,h=cv2.boundingRect(c)
-        crp_img=img[y:y+h,x:x+w]
+        x,y,w,h=cv2.boundingRect(c)         #draw rectangle
+        crp_img=img[y:y+h,x:x+w]            #Takes only Number plate part of Image(Croped Image)
 
-        cv2.imwrite(str(name)+'.png',crp_img)
+        cv2.imwrite(str(name)+'.png',crp_img)   #saves croped Image
         name+=1
         break
-cv2.drawContours(img,[numberplate_count],-1,(255,0,0),2)
+cv2.drawContours(img,[numberplate_count],-1,(255,0,0),2)    #draw contorous(Polygon) on only Number plate
 cv2.waitKey(0)
 
 
-crp_img_loc='1.png'
-cv2.imshow("Number Plate",cv2.imread(crp_img_loc))
-cv2.waitKey(0)
+crp_img_loc='1.png' 
+cv2.imshow("Number Plate",cv2.imread(crp_img_loc))  #Load the croped Image
+cv2.waitKey(0)                                      #hold for some time
 
 
-text1=pytesseract.image_to_string(crp_img_loc,lang='eng')
+text1=pytesseract.image_to_string(crp_img_loc,lang='eng')   #pytesseract to convert image to string with english lang
 print("Number is",text1)
 cv2.waitKey(0)
 #cur.execute('''DROP TABLE IF EXISTS Number_plate''')
 #cur.execute('''CREATE TABLE Number_plate(Number TEXT)''')
-cur.execute('''INSERT INTO Number_plate(Number)VALUES(?)''',(text1,))
+cur.execute('''INSERT INTO Number_plate(Number)VALUES(?)''',(text1,))   #insert number plate text in database
 con.commit()
 cur.close()
